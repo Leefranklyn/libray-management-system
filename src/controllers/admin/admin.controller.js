@@ -2,7 +2,7 @@ import Admin from "../../models/admin/admin.model.js";
 import User from "../../models/user/user.model.js";
 import Borrow from "../../models/borrow/borrow.model.js";
 import Book from "../../models/book/book.model.js";
-import { adminUpdateValidator } from "../../validators/admin/admin.validatoe.js";
+import { adminUpdateValidator } from "../../validators/admin/admin.validator.js";
 
 export const getAdmin = async (req, res) => {
   try {

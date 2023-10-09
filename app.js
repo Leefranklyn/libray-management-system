@@ -5,12 +5,12 @@ import express from "express";
 // import ConnectMongoDBSession from "connect-mongodb-session";
 import bodyParser from "body-parser";
 import cors from "cors";
-import cron from "node-cron";
+// import cron from "node-cron";
 import logger from "morgan";
 import routers from "./src/routes/index.js";
 import { connectDB } from "./src/config/db.js";
-import { error404Handler } from "./src/middleware/error_handler.js";
-import { updateStatusToDue, fineCalculator } from "./src/utils/updateStatusToDue.js";
+import { error404Handler } from "./src/middlewares/errorHandler.js";
+// import { updateStatusToDue, fineCalculator } from "./src/utils/updateStatusToDue.js";
 
 // const MongoDBStore = ConnectMongoDBSession(session)
 const app = express();
@@ -36,15 +36,15 @@ process.env.NODE_ENV === "development" ? app.use(logger("dev")) : null;
 
 connectDB(process.env.MONGO_URL);
 
-cron.schedule('0 */12 * * *', () => {
-  console.log('Running status update job every 12 hours...');
-  updateStatusToDue();
-});
+// cron.schedule('0 */12 * * *', () => {
+//   console.log('Running status update job every 12 hours...');
+//   updateStatusToDue();
+// });
 
-cron.schedule('0 0 * * *', () => {
-  console.log('Calculating fines for overdue books...');
-  fineCalculator();
-});
+// cron.schedule('0 0 * * *', () => {
+//   console.log('Calculating fines for overdue books...');
+//   fineCalculator();
+// });
 
 
 app.use(bodyParser.json());
