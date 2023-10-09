@@ -6,7 +6,7 @@ import { adminUpdateValidator } from "../../validators/admin/admin.validator.js"
 
 export const getAdmin = async (req, res) => {
   try {
-    const id = req.user.id;
+    const id = req.user;
     console.log(id);
     const admin = await Admin.findOne({ _id: id }).select("-password");
 
@@ -112,7 +112,7 @@ export const getUsersWithBorrowedBooksDue = async (req, res) => {
 
 export const uploadAdminProfilePhoto = async (req, res) => {
   try {
-    const id = req.user.id;
+    const id = req.user;
     console.log(id);
     const profilePhoto = req.file;
     const profilePhotoUrl = profilePhoto.path;
@@ -133,7 +133,7 @@ export const uploadAdminProfilePhoto = async (req, res) => {
 
 export const updateAdmin = async (req, res) => {
   try {
-    const id = req.user.id;
+    const id = req.user;
     console.log(id);
     updateValidatorResult = adminUpdateValidator.safeParse(req.body);
     if (!updateValidatorResult.success) {

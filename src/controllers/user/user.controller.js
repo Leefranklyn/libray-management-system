@@ -6,7 +6,7 @@ import { userUpdateValidator } from "../../validators/user/user.validator.js";
 
 export const getUser = async (req, res) => {
   try {
-    const id = req.user.id;
+    const id = req.user;
     console.log(id);
     const user = await User.findOne({ _id: id }).select("-password");
 
@@ -31,7 +31,7 @@ export const getUser = async (req, res) => {
 
 export const uploadUserProfilePhoto = async (req, res) => {
   try {
-    const id = req.user.id;
+    const id = req.user;
     console.log(id);
     const profilePhoto = req.file;
     const profilePhotoUrl = profilePhoto.path;
@@ -52,7 +52,7 @@ export const uploadUserProfilePhoto = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const id = req.user.id;
+    const id = req.user;
     console.log(id);
     updateValidatorResult = userUpdateValidator.safeParse(req.body);
     if (!updateValidatorResult.success) {
@@ -89,7 +89,7 @@ export const updateUser = async (req, res) => {
 
 export const borrowBook = async (req, res) => {
   try {
-    const id = req.user.id;
+    const id = req.user;
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({
@@ -133,7 +133,7 @@ export const borrowBook = async (req, res) => {
 
 export const getUsersBorrowedBooks = async (req, res) => {
     try {
-      const userId = req.user.id; // Assuming you have a user object in req
+      const userId = req.user; // Assuming you have a user object in req
   
       // Find the most recent borrow record for each book borrowed by the user
       const mostRecentBorrows = await Borrow.aggregate([
@@ -177,7 +177,7 @@ export const getUsersBorrowedBooks = async (req, res) => {
   
 export const returnBook = async (req, res) => {
   const { bookSerialNo } = req.body;
-  const userId = req.user.id;
+  const userId = req.user;
 
   try {
     const book = await Book.findOne({ isbn: bookSerialNo });

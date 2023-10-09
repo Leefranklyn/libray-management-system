@@ -15,7 +15,7 @@ router.get("/users/borrowed/due"),  verifyToken("admin"), getUsersWithBorrowedBo
 router.post("/uploadprofile",  verifyToken("admin"), upload("admin").single("profilePhoto"), uploadAdminProfilePhoto);
 router.patch("/update",  verifyToken("admin"), updateAdmin);
 router.post("/user/adduser",  verifyToken("admin"), addPyhsicalUserAndBorrowBook);
-router.post("/user/ban",  verifyToken("admin"), disableUser);
+router.post("/user/ban/:userId",  verifyToken("admin"), disableUser);
 
 
 export default router;
