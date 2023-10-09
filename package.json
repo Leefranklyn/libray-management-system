@@ -9,6 +9,8 @@
   "scripts": {
     "test": "test",
     "start": "NODE_ENV=production node app.js",
+    "start:update-status": "node src/utils/helper.js updateStatusToDue",
+    "start:calculate-fine": "node src/utils/helper.js fineCalculator",
     "dev": "NODE_ENV=development nodemon app.js"
   },
   "engines": {

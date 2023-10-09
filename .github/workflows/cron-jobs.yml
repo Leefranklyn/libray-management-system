@@ -1,0 +1,46 @@
+name: Scheduled Jobs
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'  # Runs every 12 hours
+    - cron: '0 0 * * *'     # Runs daily at midnight
+
+jobs:
+  update_status:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: yarn
+
+    - name: Run status update job
+      run: yarn start:update-status
+
+
+  calculate_fines:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Run fine calculation job
+      run: yarn start:calculate-fine
+
+
