@@ -16,13 +16,13 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: 18
+        node-version: 19.9
 
     - name: Install dependencies
       run: yarn
 
     - name: Run status update job
-      run: yarn start:update-status
+      run: node app.js
 
 
   calculate_fines:
@@ -35,12 +35,12 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: 18
+        node-version: 19.9
 
     - name: Install dependencies
-      run: yarn install
+      run: yarn
 
     - name: Run fine calculation job
-      run: yarn start:calculate-fine
+      run: node app.js
 
 

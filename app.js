@@ -10,7 +10,7 @@ import logger from "morgan";
 import routers from "./src/routes/index.js";
 import { connectDB } from "./src/config/db.js";
 import { error404Handler } from "./src/middlewares/errorHandler.js";
-// import { updateStatusToDue, fineCalculator } from "./src/utils/updateStatusToDue.js";
+import { updateStatusToDue, fineCalculator } from "./src/utils/updateStatusToDue.js";
 
 // const MongoDBStore = ConnectMongoDBSession(session)
 const app = express();
@@ -38,13 +38,13 @@ connectDB(process.env.MONGO_URL);
 
 // cron.schedule('0 */12 * * *', () => {
 //   console.log('Running status update job every 12 hours...');
-//   updateStatusToDue();
 // });
+  updateStatusToDue();
 
 // cron.schedule('0 0 * * *', () => {
 //   console.log('Calculating fines for overdue books...');
-//   fineCalculator();
 // });
+  fineCalculator();
 
 
 app.use(bodyParser.json());
