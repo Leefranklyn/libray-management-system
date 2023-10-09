@@ -38,13 +38,13 @@ connectDB(process.env.MONGO_URL);
 
 // cron.schedule('0 */12 * * *', () => {
 //   console.log('Running status update job every 12 hours...');
+// updateStatusToDue();
 // });
-  updateStatusToDue();
 
 // cron.schedule('0 0 * * *', () => {
 //   console.log('Calculating fines for overdue books...');
+// fineCalculator();
 // });
-  fineCalculator();
 
 
 app.use(bodyParser.json());
