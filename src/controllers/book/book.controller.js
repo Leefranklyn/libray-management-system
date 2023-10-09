@@ -223,11 +223,13 @@ export const getBooksByQuery = async (req, res) => {
     }
 
     if (bookName) {
-      query.bookName = bookName;
+      // Use a regular expression to match book names containing the letter "a"
+      query.bookName = new RegExp(`.*${bookName}.*`, 'i');
     }
 
     if (authorName) {
-      query.authorName = authorName;
+      // Use a regular expression to match author names containing the letter "a"
+      query.authorName = new RegExp(`.*${authorName}.*`, 'i');
     }
 
     // Use Mongoose to find books based on the query
@@ -242,6 +244,7 @@ export const getBooksByQuery = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch books.' });
   }
 };
+
 
 export const updateBook = async (req, res) => {
   try {
