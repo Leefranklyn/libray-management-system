@@ -22,7 +22,7 @@ jobs:
       run: yarn
 
     - name: Run status update job
-      run: node app.js
+      run: node src/utils/helper.js updateStatusToDue
 
 
   calculate_fines:
@@ -41,6 +41,6 @@ jobs:
       run: yarn
 
     - name: Run fine calculation job
-      run: node app.js
+      run: node src/utils/helper.js fineCalculator
 
 
