@@ -137,78 +137,111 @@ export const getAllBooks = async (req, res) => {
   }
 };
 
-export const getBooksByCateogory = async (req, res) => {
+// export const getBooksByCateogory = async (req, res) => {
+//   try {
+//     const { category } = req.query;
+//     const books = await Book.find({ category });
+//     if (!books) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Could Not Find Books By This Category",
+//       });
+//     }
+//     res.status(200).json({
+//       success: true,
+//       books: books,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching books",
+//     });
+//   }
+// };
+
+// export const getBookByBookName = async (req, res) => {
+//   try {
+//     const { bookName } = req.query;
+//     const books = await Book.find({
+//       bookName: { $regex: bookName, $options: "i" },
+//     });
+//     if (!books) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Could Not Find Books By This Name",
+//       });
+//     }
+//     res.status(200).json({
+//       success: true,
+//       books: books,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching books",
+//     });
+//   }
+// };
+
+// export const getBookByAuthorName = async (req, res) => {
+//     try {
+//       const { authorName } = req.query;
+//       const books = await Book.find({
+//         authorName: { $regex: authorName, $options: "i" },
+//       });
+//       if (!books) {
+//         return res.status(404).json({
+//           success: false,
+//           message: "Could Not Find Books By This Author's Name",
+//         });
+//       }
+//       res.status(200).json({
+//         success: true,
+//         books: books,
+//       });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({
+//         success: false,
+//         message: "An error occurred while fetching books",
+//       });
+//     }
+//   };
+
+export const getBooksByQuery = async (req, res) => {
   try {
-    const { category } = req.query;
-    const books = await Book.find({ category });
-    if (!books) {
-      return res.status(404).json({
-        success: false,
-        message: "Could Not Find Books By This Category",
-      });
+    // Extract query parameters from the request
+    const { category, bookName, authorName } = req.query;
+
+    // Build a query object based on the provided parameters
+    const query = {};
+
+    if (category) {
+      query.category = category;
     }
-    res.status(200).json({
+
+    if (bookName) {
+      query.bookName = bookName;
+    }
+
+    if (authorName) {
+      query.authorName = authorName;
+    }
+
+    // Use Mongoose to find books based on the query
+    const books = await Book.find(query);
+
+    res.json({
       success: true,
-      books: books,
+      data: books,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while fetching books",
-    });
+    res.status(500).json({ success: false, message: 'Failed to fetch books.' });
   }
 };
-
-export const getBookByBookName = async (req, res) => {
-  try {
-    const { bookName } = req.query;
-    const books = await Book.find({
-      bookName: { $regex: bookName, $options: "i" },
-    });
-    if (!books) {
-      return res.status(404).json({
-        success: false,
-        message: "Could Not Find Books By This Name",
-      });
-    }
-    res.status(200).json({
-      success: true,
-      books: books,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while fetching books",
-    });
-  }
-};
-
-export const getBookByAuthorName = async (req, res) => {
-    try {
-      const { authorName } = req.query;
-      const books = await Book.find({
-        authorName: { $regex: authorName, $options: "i" },
-      });
-      if (!books) {
-        return res.status(404).json({
-          success: false,
-          message: "Could Not Find Books By This Author's Name",
-        });
-      }
-      res.status(200).json({
-        success: true,
-        books: books,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        success: false,
-        message: "An error occurred while fetching books",
-      });
-    }
-  };
 
 export const updateBook = async (req, res) => {
   try {
