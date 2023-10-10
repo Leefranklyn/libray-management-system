@@ -10,7 +10,7 @@ const adminSchema = new Schema({
         default: "https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg"
     },
     regNo: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },

@@ -45,7 +45,7 @@ const upload = (role) => {
 };
 
 function checkFileType(file, cb) {
-  const filetypes = /jpeg|jpg|png|pdf/;
+  const filetypes = /jpeg|jpg|png|pdf|mp3|m4b|aac|wav|flac|ogg|wma|epub|mobi|azw|kf8|fb2|cbz|cbr|webm/;
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = filetypes.test(file.mimetype);
 

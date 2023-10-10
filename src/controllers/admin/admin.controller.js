@@ -135,12 +135,12 @@ export const updateAdmin = async (req, res) => {
   try {
     const id = req.user;
     console.log(id);
-    updateValidatorResult = adminUpdateValidator.safeParse(req.body);
+    const updateValidatorResult = adminUpdateValidator.safeParse(req.body);
     if (!updateValidatorResult.success) {
       return res
         .status(400)
         .json(formatZodError(updateValidatorResult.error.issues));
-    }
+    };
 
     const updatedAdmin = await Admin.findByIdAndUpdate(
       id,
@@ -175,11 +175,12 @@ export const addPyhsicalUserAndBorrowBook = async (req, res) => {
       email,
       regNo,
       phoneNumber,
+      profilePhoto,
       borrowDate,
       returnDate,
       bookName,
       bookSerialNo,
-      Description,
+      description,
     } = req.body;
 
     const newUser = new User({
@@ -211,18 +212,20 @@ export const addPyhsicalUserAndBorrowBook = async (req, res) => {
       book: book._id,
       bookName: bookName,
       isbn: bookSerialNo,
-      Description: Description,
+      Description: description,
       borrowDate: borrowDate,
       returnDate: returnDate,
     });
 
     await newBorrowedBook.save();
-    if (newBorrowedBook.success) {
-      return (book.status = "Borrowed");
-    }
+    // if (newBorrowedBook.success) {
+    //   return (book.status = "Borrowed");
+    // }
     res.status(200).json({
       success: true,
       message: "User Added and Book Successfully Borrowed",
+      user: newUser,
+      bookBorrowed: newBorrowedBook
     });
   } catch (error) {
     console.log(error);
@@ -240,7 +243,10 @@ export const disableUser = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      throw new Error("User not found");
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
     }
 
     // Set the 'disabled' field to true to disable the user
@@ -249,8 +255,9 @@ export const disableUser = async (req, res) => {
     // Save the updated user document
     await user.save();
 
-    return { success: true, message: "User disabled successfully" };
+    res.status(200).json({ success: true, message: "User disabled successfully" });
   } catch (error) {
-    return { success: false, error: error.message };
-  }
+    console.log(error);
+    res.status(500).json({ success: false, message: "An ErroR Occured While Disabling User"});
+  };
 };

@@ -5,10 +5,10 @@ import {
   bookUpdateValidator,
 } from "../../validators/book/book.validator.js";
 
-
+ 
 export const uploadEBook = async(req, res) => {
   try {
-    const eBook = req.files;
+    const eBook = req.file;
     const eBookUrl = eBook.path;
   
     res.status(200).json({
@@ -27,7 +27,7 @@ export const uploadEBook = async(req, res) => {
 
 export const uploadAudioBook = async(req, res) => {
   try {
-    const audioBook = req.files;
+    const audioBook = req.file;
     const audioBookUrl = audioBook.path;
   
     res.status(200).json({
@@ -46,7 +46,7 @@ export const uploadAudioBook = async(req, res) => {
 
 export const uploadCoverImage = async(req, res) => {
   try {
-    const coverImage = req.files;
+    const coverImage = req.file;
     const coverImageUrl = coverImage.path;
   
     res.status(200).json({
@@ -105,6 +105,7 @@ export const addBook = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Book Added Successfully",
+      book: newBook
     });
   } catch (error) {
     console.log(error);
@@ -244,7 +245,6 @@ export const getBooksByQuery = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch books.' });
   }
 };
-
 
 export const updateBook = async (req, res) => {
   try {

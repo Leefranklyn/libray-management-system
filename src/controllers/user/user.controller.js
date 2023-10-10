@@ -54,7 +54,7 @@ export const updateUser = async (req, res) => {
   try {
     const id = req.user;
     console.log(id);
-    updateValidatorResult = userUpdateValidator.safeParse(req.body);
+    const updateValidatorResult = userUpdateValidator.safeParse(req.body);
     if (!updateValidatorResult.success) {
       return res
         .status(400)
@@ -97,26 +97,40 @@ export const borrowBook = async (req, res) => {
         message: "User Not Found",
       });
     }
-    const { borrowDate, returnDate, bookSerialNo, Description } = req.body;
+
+    const { borrowDate, returnDate, bookSerialNo, description } = req.body;
     const book = await Book.findOne({ isbn: bookSerialNo });
+
     if (!book) {
       return res.status(404).json({
         success: false,
         message: "Book Not Found",
       });
     }
+
+    if (book.status === "Borrowed") {
+      return res.status(400).json({
+        success: false,
+        message: "Book Not Available At The Moment",
+      });
+    }
+
     const newBorrowedBook = new Borrow({
       user: user._id,
       book: book._id,
       isbn: bookSerialNo,
+      bookName: book.bookName,
       borrowDate: borrowDate,
       returnDate: returnDate,
-      Description: Description,
+      Description: description,
     });
+
     await newBorrowedBook.save();
-    if (newBorrowedBook.success) {
-      return (book.status = "Borrowed");
-    }
+
+    // Update the book status to "Borrowed"
+    book.status = "Borrowed";
+    await book.save();
+
     res.status(200).json({
       success: true,
       message: "Book Borrowed Successfully",
@@ -131,33 +145,91 @@ export const borrowBook = async (req, res) => {
   }
 };
 
+export const checkBorrowedEbook = async (req, res) => {
+  try {
+    const userId = req.user; // Assuming you have a user object in req
+    const bookId = req.params.bookId; // Assuming you have a route parameter for bookId
+
+    // Check if the user has borrowed the book with the given bookId
+    const borrowedBook = await Borrow.findOne({
+      user: userId,
+      book: bookId,
+      status: {$in: ["Borrowed", "Due"]},
+    });
+
+    if (!borrowedBook) {
+      return res.status(403).json({
+        success: false,
+        message: "You must borrow this book before accessing the ebook.",
+      });
+    };
+
+    const book = await Book.findById(bookId);
+    if(!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book Not Found"
+      });
+    };
+    const eBook = book.eBook;
+
+    // If the user has borrowed the book, you can allow them to access the ebook here
+    res.status(200).json({
+      success: true,
+      message: "You can now access the ebook.",
+      eBook: eBook
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error checking borrowed book." });
+  }
+};
+
+export const checkBorrowedAudiobook = async (req, res) => {
+  try {
+    const userId = req.user; // Assuming you have a user object in req
+    const bookId = req.params.bookId; // Assuming you have a route parameter for bookId
+
+    // Check if the user has borrowed the book with the given bookId
+    const borrowedBook = await Borrow.findOne({
+      user: userId,
+      book: bookId,
+      status: {$in: ["Borrowed", "Due"]},
+    });
+
+    if (!borrowedBook) {
+      return res.status(403).json({
+        success: false,
+        message: "You must borrow this book before accessing the audiobook.",
+      });
+    };
+
+    const book = await Book.findById(bookId);
+    if(!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book Not Found"
+      });
+    };
+    const audioBook = book.audioBook;
+
+    // If the user has borrowed the book, you can allow them to access the ebook here
+    res.status(200).json({
+      success: true,
+      message: "You can now access the audiobook.",
+      audioBook: audioBook
+    });
+  } catch (error) {
+    console.error(error);  
+    res.status(500).json({ success: false, message: "Error checking borrowed book." });
+  } 
+};
+
 export const getUsersBorrowedBooks = async (req, res) => {
     try {
       const userId = req.user; // Assuming you have a user object in req
-  
-      // Find the most recent borrow record for each book borrowed by the user
-      const mostRecentBorrows = await Borrow.aggregate([
-        {
-          $match: {
-            user: userId,
-            status: "Borrowed",
-          },
-        },
-        {
-          $sort: {
-            borrowDate: -1, // Sort in descending order of borrowDate
-          },
-        },
-        {
-          $group: {
-            _id: "$book",
-            mostRecent: { $first: "$$ROOT" }, // Select the first (most recent) borrow for each book
-          },
-        },
-        {
-          $replaceRoot: { newRoot: "$mostRecent" }, // Replace the root document with the most recent borrow
-        },
-      ]).populate({
+      const borrowedBooks = await Borrow.find({ user: userId, status: "Borrowed" })
+      .populate({
         path: "book",
         model: "Book", // Use your actual Book model name
       });
@@ -165,7 +237,7 @@ export const getUsersBorrowedBooks = async (req, res) => {
       // Return the most recent borrowed books as a JSON response
       res.json({
         success: true,
-        data: mostRecentBorrows,
+        borrowedBooks: borrowedBooks,
       });
     } catch (error) {
       console.error(error);
