@@ -200,12 +200,12 @@ export const addPyhsicalUserAndBorrowBook = async (req, res) => {
         message: "Book Not Found",
       });
     }
-    if (book.status === "Borrowed") {
-      return res.status(400).json({
-        success: false,
-        message: "Book Not Available At The Moment",
-      });
-    }
+    // if (book.status === "Borrowed") {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Book Not Available At The Moment",
+    //   });
+    // };
 
     const newBorrowedBook = new Borrow({
       user: newUser._id,
