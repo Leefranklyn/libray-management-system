@@ -34,7 +34,9 @@ export const getAllUsers = async (req, res) => {
     const userCount = await User.countDocuments();
     const users = await User.find({});
     if (!users || userCount === 0) {
-      return res.status(404).json({totalUsers: userCount , message: "No Users Found", users: [] });
+      return res
+        .status(404)
+        .json({ totalUsers: userCount, message: "No Users Found", users: [] });
     }
 
     res.status(200).json({
@@ -63,9 +65,13 @@ export const getUsersWithBorrowedBooks = async (req, res) => {
         model: "Book", // Use your actual Book model name
       });
 
-      if (!borrowedBooks || userCount === 0) {
-        return res.status(404).json({totalUsers: userCount , message: "No Borrowed Books", data: [] });
-      };
+    if (!borrowedBooks || userCount === 0) {
+      return res.status(404).json({
+        totalUsers: userCount,
+        message: "No Borrowed Books",
+        data: [],
+      });
+    }
 
     // Return the borrowed books along with user and book information
     res.json({
@@ -96,9 +102,13 @@ export const getUsersWithBorrowedBooksDue = async (req, res) => {
         model: "Book",
       });
 
-      if (!userBorrowedBooksDue || userCount === 0) {
-        return res.status(404).json({totalUsers: userCount , message: "No Due Books Found", data: []});
-      }
+    if (!userBorrowedBooksDue || userCount === 0) {
+      return res.status(404).json({
+        totalUsers: userCount,
+        message: "No Due Books Found",
+        data: [],
+      });
+    }
     res.json({
       success: true,
       totalUsers: userCount,
@@ -140,7 +150,7 @@ export const updateAdmin = async (req, res) => {
       return res
         .status(400)
         .json(formatZodError(updateValidatorResult.error.issues));
-    };
+    }
 
     const updatedAdmin = await Admin.findByIdAndUpdate(
       id,
@@ -225,13 +235,60 @@ export const addPyhsicalUserAndBorrowBook = async (req, res) => {
       success: true,
       message: "User Added and Book Successfully Borrowed",
       user: newUser,
-      bookBorrowed: newBorrowedBook
+      bookBorrowed: newBorrowedBook,
     });
   } catch (error) {
     console.log(error);
     res.status(500).json({
       success: false,
       message: "Could Not Add User And Borrow Book",
+    });
+  }
+};
+
+export const verifyPayment = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const bookId = req.params.bookId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const book = await Book.findById(bookId);
+
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    const borrow = await Borrow.findOne({
+      user: userId,
+      book: book._id, // Make sure it's currently borrowed
+    });
+
+    if (!borrow) {
+      return res.status(404).json({ message: "Borrow record not found" });
+    }
+
+    if (borrow.status === "Returned") {
+      return res.status(400).json({ message: "Book already returned" });
+    }
+
+    borrow.paymentStatus = "Accepted";
+    borrow.status = "Returned";
+    borrow.fine = 0;
+
+    await borrow.save();
+    res.status(200).json({
+      success: true,
+      message: "Payment Verified Successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Paymnet Verification Failed",
     });
   }
 };
@@ -245,7 +302,7 @@ export const disableUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -255,9 +312,14 @@ export const disableUser = async (req, res) => {
     // Save the updated user document
     await user.save();
 
-    res.status(200).json({ success: true, message: "User disabled successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "User disabled successfully" });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "An ErroR Occured While Disabling User"});
-  };
+    res.status(500).json({
+      success: false,
+      message: "An Error Occured While Disabling User",
+    });
+  }
 };

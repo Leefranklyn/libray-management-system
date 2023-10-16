@@ -2,7 +2,7 @@ import { Router } from "express";
 import { verifyToken } from "../../middlewares/jwt.js";
 import upload from "../../config/multer.js";
 import { adminLogin, adminRegistration } from "../../controllers/auth/admin.auth.controller.js";
-import { addPyhsicalUserAndBorrowBook, disableUser, getAdmin, getAllUsers, getUsersWithBorrowedBooks, getUsersWithBorrowedBooksDue, updateAdmin, uploadAdminProfilePhoto } from "../../controllers/admin/admin.controller.js";
+import { addPyhsicalUserAndBorrowBook, disableUser, getAdmin, getAllUsers, getUsersWithBorrowedBooks, getUsersWithBorrowedBooksDue, updateAdmin, uploadAdminProfilePhoto, verifyPayment } from "../../controllers/admin/admin.controller.js";
 const router = Router();
 
 router.post("/signup", adminRegistration);
@@ -14,6 +14,7 @@ router.get("/users/borrowed/due", verifyToken("admin"), getUsersWithBorrowedBook
 router.post("/uploadprofile",  verifyToken("admin"), upload("admin").single("profilePhoto"), uploadAdminProfilePhoto);
 router.patch("/update",  verifyToken("admin"), updateAdmin);
 router.post("/users/adduser",  verifyToken("admin"), addPyhsicalUserAndBorrowBook);
+router.patch("/user/book/return/verify/:bookId/:userId", verifyToken("user"), verifyPayment);
 router.post("/users/ban/:userId",  verifyToken("admin"), disableUser);
 
 

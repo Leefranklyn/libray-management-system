@@ -154,7 +154,7 @@ export const checkBorrowedEbook = async (req, res) => {
     const borrowedBook = await Borrow.findOne({
       user: userId,
       book: bookId,
-      status: {$in: ["Borrowed", "Due"]},
+      status: { $in: ["Borrowed", "Due"] },
     });
 
     if (!borrowedBook) {
@@ -162,26 +162,28 @@ export const checkBorrowedEbook = async (req, res) => {
         success: false,
         message: "You must borrow this book before accessing the ebook.",
       });
-    };
+    }
 
     const book = await Book.findById(bookId);
-    if(!book) {
+    if (!book) {
       return res.status(404).json({
         success: false,
-        message: "Book Not Found"
+        message: "Book Not Found",
       });
-    };
+    }
     const eBook = book.eBook;
 
     // If the user has borrowed the book, you can allow them to access the ebook here
     res.status(200).json({
       success: true,
       message: "You can now access the ebook.",
-      eBook: eBook
+      eBook: eBook,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Error checking borrowed book." });
+    res
+      .status(500)
+      .json({ success: false, message: "Error checking borrowed book." });
   }
 };
 
@@ -194,7 +196,7 @@ export const checkBorrowedAudiobook = async (req, res) => {
     const borrowedBook = await Borrow.findOne({
       user: userId,
       book: bookId,
-      status: {$in: ["Borrowed", "Due"]},
+      status: { $in: ["Borrowed", "Due"] },
     });
 
     if (!borrowedBook) {
@@ -202,57 +204,159 @@ export const checkBorrowedAudiobook = async (req, res) => {
         success: false,
         message: "You must borrow this book before accessing the audiobook.",
       });
-    };
+    }
 
     const book = await Book.findById(bookId);
-    if(!book) {
+    if (!book) {
       return res.status(404).json({
         success: false,
-        message: "Book Not Found"
+        message: "Book Not Found",
       });
-    };
+    }
     const audioBook = book.audioBook;
 
     // If the user has borrowed the book, you can allow them to access the ebook here
     res.status(200).json({
       success: true,
       message: "You can now access the audiobook.",
-      audioBook: audioBook
+      audioBook: audioBook,
     });
   } catch (error) {
-    console.error(error);  
-    res.status(500).json({ success: false, message: "Error checking borrowed book." });
-  } 
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error checking borrowed book." });
+  }
 };
 
 export const getUsersBorrowedBooks = async (req, res) => {
-    try {
-      const userId = req.user; // Assuming you have a user object in req
-      const borrowedBooks = await Borrow.find({ user: userId, status: "Borrowed" })
-      .populate({
-        path: "book",
-        model: "Book", // Use your actual Book model name
-      });
-  
-      // Return the most recent borrowed books as a JSON response
-      res.json({
-        success: true,
-        borrowedBooks: borrowedBooks,
-      });
-    } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ success: false, message: "Failed to fetch borrowed books." });
-    }
-  };
-  
-export const returnBook = async (req, res) => {
-  const { bookSerialNo } = req.body;
-  const userId = req.user;
-
   try {
-    const book = await Book.findOne({ isbn: bookSerialNo });
+    const userId = req.user; // Assuming you have a user object in req
+    const borrowedBooks = await Borrow.find({
+      user: userId,
+      status: "Borrowed",
+    }).populate({
+      path: "book",
+      model: "Book", // Use your actual Book model name
+    });
+
+    // Return the most recent borrowed books as a JSON response
+    res.json({
+      success: true,
+      borrowedBooks: borrowedBooks,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch borrowed books." });
+  }
+};
+
+// export const returnBook = async (req, res) => {
+//   const { bookSerialNo } = req.body;
+//   const userId = req.user;
+
+//   try {
+//     const book = await Book.findOne({ isbn: bookSerialNo });
+
+//     if (!book) {
+//       return res.status(404).json({ message: "Book not found" });
+//     }
+
+//     const borrow = await Borrow.findOne({
+//       user: userId,
+//       book: book._id, // Make sure it's currently borrowed
+//     });
+
+//     if (!borrow) {
+//       return res.status(404).json({ message: "Borrow record not found" });
+//     }
+
+//     if (borrow.status === "Returned") {
+//       return res.status(400).json({ message: "Book already returned" });
+//     }
+
+//     // Check if there's an outstanding fine in the borrow record
+//     if (borrow.fine > 0) {
+//       // Assuming you have a function for paying fines
+//       const finePaid = await payFine(borrow.user, borrow.fine); // Deduct the fine from the user's balance
+
+//       if (!finePaid) {
+//         return res.status(400).json({ message: "Fine payment failed" });
+//       }
+//     }
+
+//     // Update the borrow record status to 'returned'
+//     borrow.status = "returned";
+//     await borrow.save();
+
+//     // Update the book status to 'In-Shelf'
+//     book.status = "In-Shelf";
+//     await book.save();
+
+//     return res.status(200).json({ message: "Book returned successfully" });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "An Error Occured",
+//     });
+//   }
+// };
+
+export const returnBook = async (req, res) => {
+  try {
+    const bookId = req.params.bookId;
+    const userId = req.user;
+
+    const book = await Book.findById(bookId);
+
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    const borrow = await Borrow.findOne({
+      user: userId,
+      book: book._id, // Make sure it's currently borrowed
+    });
+
+    if (!borrow) {
+      return res.status(404).json({ message: "Borrow record not found" });
+    };
+
+    if (borrow.status === "Returned") {
+      return res.status(400).json({ message: "Book already returned" });
+    };
+
+    if (borrow.fine !== 0) {
+      return res.status(400).json({
+        success: false,
+        message: "There is An Outstanding Fine To Be Paid",
+      });
+    }
+
+    borrow.status = "Returned";
+    borrow.fine = 0;
+
+    await borrow.save();
+    res.status(200).json({
+      success: true,
+      message: "Book Returned Successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to Return Borrowed Book." });
+  }
+};
+
+export const payCash = async (req, res) => {
+  try {
+    const bookId = req.params.bookId;
+    const userId = req.user;
+    const book = await Book.findById(bookId);
 
     if (!book) {
       return res.status(404).json({ message: "Book not found" });
@@ -267,34 +371,24 @@ export const returnBook = async (req, res) => {
       return res.status(404).json({ message: "Borrow record not found" });
     }
 
-    if (borrow.status === "returned") {
+    if (borrow.status === "Returned") {
       return res.status(400).json({ message: "Book already returned" });
     }
 
-    // Check if there's an outstanding fine in the borrow record
-    if (borrow.fine > 0) {
-      // Assuming you have a function for paying fines
-      const finePaid = await payFine(borrow.user, borrow.fine); // Deduct the fine from the user's balance
+    borrow.paymentStatus = "Pending";
 
-      if (!finePaid) {
-        return res.status(400).json({ message: "Fine payment failed" });
-      }
-    }
-
-    // Update the borrow record status to 'returned'
-    borrow.status = "returned";
     await borrow.save();
-
-    // Update the book status to 'In-Shelf'
-    book.status = "In-Shelf";
-    await book.save();
-
-    return res.status(200).json({ message: "Book returned successfully" });
+    res.status(200).json({
+      success: true,
+      message: "Success. Awaiting payment Confirmation",
+    });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      success: false,
-      message: "An Error Occured",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "An Error Occured While Making The Payment.",
+      });
   }
 };

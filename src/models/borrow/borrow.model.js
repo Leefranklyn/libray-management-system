@@ -31,6 +31,11 @@ const borrowSchema = new Schema({
         type: String,
         enum: ["Borrowed", "Due", "Returned"],
         default: "Borrowed"
+    },
+    paymentStatus: {
+        type: String,
+        enum: [";","Pending", "Accepted"],
+        default: ";"
     }
 }, {
     timestamps: true
