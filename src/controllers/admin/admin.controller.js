@@ -49,6 +49,20 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
+export const searchForUser = async (req, res) => {
+  try{
+    const regNo = req.params.regno;
+    const user = await User.findOne({ regNo : regNo});
+    if(!user) {
+     return res
+        .status(404)
+        .json({success: false, message: "User Not Found"});
+    }
+  }catch(error) {
+     res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 export const getUsersWithBorrowedBooks = async (req, res) => {
   try {
     // Count the total number of users with borrowed books
