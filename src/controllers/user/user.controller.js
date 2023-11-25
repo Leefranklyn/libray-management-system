@@ -325,9 +325,9 @@ export const returnBook = async (req, res) => {
       return res.status(404).json({ message: "Borrow record not found" });
     };
 
-    if (borrow.status === "Returned") {
-      return res.status(400).json({ message: "Book already returned" });
-    };
+    // if (borrow.status === "Returned") {
+    //   return res.status(400).json({ message: "Book already returned" });
+    // };
 
     if (borrow.fine !== 0) {
       return res.status(400).json({
@@ -371,9 +371,9 @@ export const payCash = async (req, res) => {
       return res.status(404).json({ message: "Borrow record not found" });
     }
 
-    if (borrow.status === "Returned") {
-      return res.status(400).json({ message: "Book already returned" });
-    }
+    // if (borrow.status === "Returned") {
+    //   return res.status(400).json({ message: "Book already returned" });
+    // }
 
     borrow.paymentStatus = "Pending";
 
