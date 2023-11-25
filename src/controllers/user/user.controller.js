@@ -336,8 +336,7 @@ export const returnBook = async (req, res) => {
       });
     }
 
-    borrow.status = "Returned";
-    borrow.fine = 0;
+    await Borrow.findByIdAndDelete(borrow._id);
     book.status = "In-Shelf";
 
     await borrow.save();
