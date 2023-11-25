@@ -228,6 +228,7 @@ export const addPyhsicalUserAndBorrowBook = async (req, res) => {
     });
 
     await newBorrowedBook.save();
+    
     // if (newBorrowedBook.success) {
     //   return (book.status = "Borrowed");
     // }
@@ -271,15 +272,14 @@ export const verifyPayment = async (req, res) => {
       return res.status(404).json({ message: "Borrow record not found" });
     }
 
-    if (borrow.status === "Returned") {
-      return res.status(400).json({ message: "Book already returned" });
-    }
+    // if (borrow.status === "Returned") {
+    //   return res.status(400).json({ message: "Book already returned" });
+    // }
 
-    borrow.paymentStatus = "Accepted";
-    borrow.status = "Returned";
-    borrow.fine = 0;
+    await Borrow.findByIdAndDelete(borrow._id);
 
-    await borrow.save();
+    book.status = "In-Shelf";
+    await book.save();
     res.status(200).json({
       success: true,
       message: "Payment Verified Successfully",
