@@ -30,7 +30,7 @@ const app = express();
 //     },
 //   })
 // );
-app.use(cors({ origin: ['http://localhost:3000']}));
+app.use(cors({ origin: ['http://localhost:3000', 'https://deborah-lms.vercel.app']}));
 
 process.env.NODE_ENV === "development" ? app.use(logger("dev")) : null;
 
