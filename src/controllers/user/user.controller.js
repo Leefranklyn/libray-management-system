@@ -338,8 +338,10 @@ export const returnBook = async (req, res) => {
 
     borrow.status = "Returned";
     borrow.fine = 0;
+    book.status = "In-Shelf";
 
     await borrow.save();
+    await book.save();
     res.status(200).json({
       success: true,
       message: "Book Returned Successfully",
