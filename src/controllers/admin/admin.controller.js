@@ -57,7 +57,22 @@ export const searchForUser = async (req, res) => {
      return res
         .status(404)
         .json({success: false, message: "User Not Found"});
-    }
+    };
+    
+    const borrowedBooks = await Borrow.find({
+      user: user._id,
+      status: "Borrowed",
+    }).populate({
+      path: "book",
+      model: "Book", // Use your actual Book model name
+    });
+
+    // Return the most recent borrowed books as a JSON response
+    res.json({
+      success: true,
+      User: user,
+      borrowedBooks: borrowedBooks,
+    });
   }catch(error) {
      res.status(500).json({ success: false, message: "Internal Server Error" });
   }
