@@ -15,7 +15,7 @@ router.get("/users/borrowed/due", verifyToken("admin"), getUsersWithBorrowedBook
 router.post("/uploadprofile",  verifyToken("admin"), upload("admin").single("profilePhoto"), uploadAdminProfilePhoto);
 router.patch("/update",  verifyToken("admin"), updateAdmin);
 router.post("/users/adduser",  verifyToken("admin"), addPyhsicalUserAndBorrowBook);
-router.patch("/user/book/return/verify/:bookId/:userId", verifyToken("user"), verifyPayment);
+router.patch("/user/book/return/verify/:bookId/:userId", verifyToken("admin"), verifyPayment);
 router.post("/users/ban/:userId",  verifyToken("admin"), disableUser);
 
 
