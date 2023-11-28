@@ -8,7 +8,8 @@ on:
 jobs:
   update_status:
     runs-on: ubuntu-latest
-
+    env:
+      MONGO_URL: ${{ secrets.MONGO_URL }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -27,7 +28,8 @@ jobs:
 
   calculate_fines:
     runs-on: ubuntu-latest
-
+    env:
+      MONGO_URL: ${{ secrets.MONGO_URL }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
