@@ -4,6 +4,7 @@ const bookSchema = new Schema(
   {
     bookName: {
       type: String,
+      unique: true,
       required: true,
     },
     authorName: {
