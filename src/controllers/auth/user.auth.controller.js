@@ -12,13 +12,14 @@ export const userRegistration = async (req, res) => {
             return res.status(400).json(formatZodError(registrationValidatorResult.error.issues))
         };
     
-        const { regNo, email, password } = req.body;
+        const { fullName, regNo, email, password } = req.body;
     
         const encryptedPassword = createHash("sha256")
         .update(password)
         .digest("base64");
     
         const newUser = new User({
+            fullName,
             regNo,
             email,
             password: encryptedPassword
