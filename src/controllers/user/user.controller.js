@@ -128,8 +128,8 @@ export const borrowBook = async (req, res) => {
     await newBorrowedBook.save();
 
     // Update the book status to "Borrowed"
-    book.status = "Borrowed";
-    await book.save();
+    // book.status = "Borrowed";
+    // await book.save();
 
     res.status(200).json({
       success: true,
