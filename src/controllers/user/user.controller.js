@@ -114,7 +114,18 @@ export const borrowBook = async (req, res) => {
         message: "Book Not Available At The Moment",
       });
     }
-
+    const borrowedBook = await Borrow.findOne({
+      user: id,
+      book: book._id
+    });
+    
+    if(borrowedBook) {
+      return res.status(400).json({
+        success: false,
+        message: "Book Already Borrowed By User",
+      });
+    }
+    
     const newBorrowedBook = new Borrow({
       user: user._id,
       book: book._id,
