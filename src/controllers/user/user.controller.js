@@ -348,9 +348,9 @@ export const returnBook = async (req, res) => {
     }
 
     await Borrow.findByIdAndDelete(borrow._id);
-    book.status = "In-Shelf";
+    // book.status = "In-Shelf";
 
-    await book.save();
+    // await book.save();
     res.status(200).json({
       success: true,
       message: "Book Returned Successfully",
