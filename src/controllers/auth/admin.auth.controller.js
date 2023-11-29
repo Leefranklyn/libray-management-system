@@ -12,13 +12,14 @@ export const adminRegistration = async (req, res) => {
             return res.status(400).json(formatZodError(registrationValidatorResult.error.issues))
         };
     
-        const { regNo, email, password } = req.body;
+        const { fullName, regNo, email, password } = req.body;
     
         const encryptedPassword = createHash("sha256")
         .update(password)
         .digest("base64");
     
         const newAdmin = new Admin({
+            fullName,
             regNo,
             email,
             password: encryptedPassword
